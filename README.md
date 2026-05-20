@@ -165,14 +165,7 @@ This project uses:
 
 ---
 
-## 📅 Booking Routes
 
-| Method | Endpoint               | Access  |
-| ------ | ---------------------- | ------- |
-| POST   | `/api/bookings`        | Private |
-| GET    | `/api/bookings?email=` | Private |
-| PATCH  | `/api/bookings/:id`    | Private |
-| DELETE | `/api/bookings/:id`    | Private |
 
 ---
 
