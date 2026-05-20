@@ -21,7 +21,11 @@ export default function MyBookings() {
   const { data: bookings, isLoading } = useQuery({
     queryKey: ['bookings', user?.email],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookings?email=${user?.email}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookings?email=${user?.email}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('docappoint_token')}`,
+        },
+      });
       return res.data;
     },
     retry: false,
@@ -31,7 +35,11 @@ export default function MyBookings() {
   const displayBookings = bookings || [];
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => axios.delete(`${import.meta.env.VITE_API_URL}/api/bookings/${id}`),
+    mutationFn: (id) => axios.delete(`${import.meta.env.VITE_API_URL}/api/bookings/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('docappoint_token')}`,
+      },
+    }),
     onSuccess: () => queryClient.invalidateQueries(['bookings']),
   });
 
@@ -145,8 +153,8 @@ export default function MyBookings() {
                   </td>
                   <td className="px-5 py-4 text-slate-700 text-sm">{booking.patientName}</td>
                   <td className="px-5 py-4">
-                    <div className="text-slate-800 text-sm font-medium">{new Date(booking.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
-                    <div className="text-slate-500 text-xs">{booking.time}</div>
+                    <div className="text-slate-800 text-sm font-medium">{new Date(booking.appointmentDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                    <div className="text-slate-500 text-xs">{booking.appointmentTime}</div>
                   </td>
                   <td className="px-5 py-4 text-slate-800 font-bold text-sm">${booking.fee || '—'}</td>
                   <td className="px-5 py-4">
@@ -197,11 +205,11 @@ export default function MyBookings() {
               </div>
               <div>
                 <div className="text-slate-400 text-xs">Date</div>
-                <div className="text-slate-700 font-medium">{new Date(booking.date).toLocaleDateString()}</div>
+                <div className="text-slate-700 font-medium">{new Date(booking.appointmentDate).toLocaleDateString()}</div>
               </div>
               <div>
                 <div className="text-slate-400 text-xs">Time</div>
-                <div className="text-slate-700 font-medium">{booking.time}</div>
+                <div className="text-slate-700 font-medium">{booking.appointmentTime}</div>
               </div>
               <div>
                 <div className="text-slate-400 text-xs">Fee</div>

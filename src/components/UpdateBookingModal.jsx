@@ -18,8 +18,8 @@ export default function UpdateBookingModal({ booking, onClose }) {
       email: booking?.userEmail || '',
       patientName: booking?.patientName || '',
       phone: booking?.phone || '',
-      date: booking?.date || '',
-      time: booking?.time || '',
+      date: booking?.appointmentDate || '',
+      time: booking?.appointmentTime || '',
     },
   });
 
@@ -30,12 +30,20 @@ export default function UpdateBookingModal({ booking, onClose }) {
 
   const onSubmit = async (data) => {
     try {
-      await axios.patch(`${import.meta.env.VITE_API_URL}/bookings/${booking._id}`, {
-        patientName: data.patientName,
-        phone: data.phone,
-        date: data.date,
-        time: data.time,
-      });
+      await axios.patch(
+        `${import.meta.env.VITE_API_URL}/api/bookings/${booking._id}`,
+        {
+          patientName: data.patientName,
+          phone: data.phone,
+          appointmentDate: data.date,
+          appointmentTime: data.time,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('docappoint_token')}`,
+          },
+        }
+      );
       toast.success('Booking updated successfully!');
       queryClient.invalidateQueries(['bookings']);
       onClose();
