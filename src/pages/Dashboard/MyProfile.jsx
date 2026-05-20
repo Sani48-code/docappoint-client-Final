@@ -14,7 +14,9 @@ export default function MyProfile() {
   const { data: bookingsData } = useQuery({
     queryKey: ['bookings-count', user?.email],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/bookings?email=${user?.email}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookings?email=${user?.email}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('docappoint_token')}` },
+      });
       return res.data;
     },
     retry: false,
@@ -58,7 +60,7 @@ export default function MyProfile() {
         </div>
 
         {/* Avatar */}
-        <div className="px-8 pb-8">
+        <div className="px-4 sm:px-8 pb-6 sm:pb-8">
           <div className="relative -mt-14 mb-5 flex items-end justify-between">
             <div className="relative">
               {user?.photoURL ? (
@@ -82,23 +84,23 @@ export default function MyProfile() {
             </button>
           </div>
 
-          <h2 className="text-slate-800 font-black text-2xl mb-1">{user?.name}</h2>
-          <p className="text-slate-500 text-sm flex items-center gap-2 mb-6">
+          <h2 className="text-slate-800 font-black text-xl sm:text-2xl mb-1 break-words">{user?.name}</h2>
+          <p className="text-slate-500 text-sm flex items-center gap-2 mb-5 sm:mb-6 break-all">
             <FaEnvelope className="text-base" />
             {user?.email}
           </p>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
             {[
               { label: 'Total Bookings', value: totalBookings, icon: '📅' },
               { label: 'Member Since', value: '2026', icon: '🗓️' },
               { label: 'Status', value: 'Active', icon: '✅' },
             ].map((stat) => (
-              <div key={stat.label} className="bg-slate-50 border border-slate-100 rounded-xl p-4 text-center">
-                <div className="text-2xl mb-1">{stat.icon}</div>
-                <div className="text-slate-800 font-black text-lg">{stat.value}</div>
-                <div className="text-slate-400 text-xs">{stat.label}</div>
+              <div key={stat.label} className="bg-slate-50 border border-slate-100 rounded-xl p-2 sm:p-4 text-center">
+                <div className="text-lg sm:text-2xl mb-1">{stat.icon}</div>
+                <div className="text-slate-800 font-black text-sm sm:text-lg">{stat.value}</div>
+                <div className="text-slate-400 text-[10px] sm:text-xs leading-tight">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -110,9 +112,9 @@ export default function MyProfile() {
               { label: 'Email Address', value: user?.email },
               { label: 'Account Type', value: 'Patient' },
             ].map((row) => (
-              <div key={row.label} className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
-                <span className="text-slate-400 text-sm">{row.label}</span>
-                <span className="text-slate-700 font-medium text-sm">{row.value}</span>
+              <div key={row.label} className="flex items-start justify-between gap-4 py-3 border-b border-slate-100 last:border-0">
+                <span className="text-slate-400 text-sm shrink-0">{row.label}</span>
+                <span className="text-slate-700 font-medium text-sm text-right break-all">{row.value}</span>
               </div>
             ))}
           </div>

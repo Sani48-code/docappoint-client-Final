@@ -103,9 +103,9 @@ export default function BookingModal({ doctor, onClose }) {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="p-4 sm:p-6 space-y-4">
             {/* Read-only fields */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5 block">Doctor</label>
                 <input
@@ -136,7 +136,7 @@ export default function BookingModal({ doctor, onClose }) {
             </div>
 
             {/* Gender + Phone */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5 block">Gender *</label>
                 <select {...register('gender', { required: 'Required' })} className="input-field text-sm">
@@ -163,7 +163,7 @@ export default function BookingModal({ doctor, onClose }) {
             </div>
 
             {/* Date + Time */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5 block">Date *</label>
                 <input

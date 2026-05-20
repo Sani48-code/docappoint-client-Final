@@ -111,8 +111,8 @@ export default function HeroBanner() {
         </Swiper>
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-16 lg:py-24">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-10 sm:py-16 lg:py-24">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
           {/* Left Content */}
           <motion.div
             variants={containerVariants}
@@ -129,7 +129,7 @@ export default function HeroBanner() {
             </motion.div>
 
             {/* Headline */}
-            <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.05] mb-6">
+            <motion.h1 variants={itemVariants} className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.05] mb-4 sm:mb-6">
               Modern Doctor
               <br />
               <span className="bg-gradient-to-r from-primary via-accent to-cyan-300 bg-clip-text text-transparent">
@@ -139,7 +139,7 @@ export default function HeroBanner() {
               Booking
             </motion.h1>
 
-            <motion.p variants={itemVariants} className="text-white/60 text-lg leading-relaxed mb-8 max-w-lg">
+            <motion.p variants={itemVariants} className="text-white/60 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8 max-w-lg">
               Connect with top-rated specialists instantly. Book appointments online, manage your health records, and get expert care — all in one place.
             </motion.p>
 
@@ -166,7 +166,7 @@ export default function HeroBanner() {
             </motion.div>
 
             {/* Stats row */}
-            <motion.div variants={itemVariants} className="flex items-center gap-8 pt-6 border-t border-white/10">
+            <motion.div variants={itemVariants} className="grid grid-cols-3 gap-4 md:gap-8 pt-6 border-t border-white/10">
               {stats.map((stat) => (
                 <StatCard key={stat.label} {...stat} animate={animateStats} />
               ))}

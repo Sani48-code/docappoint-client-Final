@@ -77,8 +77,8 @@ export default function WhyChooseUs() {
         </div>
 
         {/* Bottom stats bar */}
-        <div className="mt-16 bg-gradient-to-r from-primary/10 to-accent/10 border border-accent/20 rounded-2xl p-8" data-aos="fade-up" data-aos-delay="200">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="mt-12 md:mt-16 bg-gradient-to-r from-primary/10 to-accent/10 border border-accent/20 rounded-2xl p-5 sm:p-8" data-aos="fade-up" data-aos-delay="200">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
             {[
               { value: '98%', label: 'Patient Satisfaction' },
               { value: '1,200+', label: 'Verified Doctors' },
@@ -86,8 +86,8 @@ export default function WhyChooseUs() {
               { value: '40+', label: 'Medical Specialties' },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="text-3xl font-black text-gradient mb-1">{stat.value}</div>
-                <div className="text-white/50 text-sm">{stat.label}</div>
+                <div className="text-xl sm:text-3xl font-black text-gradient mb-1">{stat.value}</div>
+                <div className="text-white/50 text-xs sm:text-sm">{stat.label}</div>
               </div>
             ))}
           </div>

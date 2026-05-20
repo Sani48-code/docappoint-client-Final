@@ -25,17 +25,15 @@ function PasswordStrength({ password }) {
           <div key={i} className={`flex-1 h-1.5 rounded-full transition-all duration-300 ${i < strength ? colors[strength - 1] : 'bg-slate-200'}`} />
         ))}
       </div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
         <span className={`text-xs font-medium ${strength === 3 ? 'text-emerald-500' : strength === 2 ? 'text-amber-500' : 'text-rose-500'}`}>
           {labels[strength - 1] || 'Too weak'}
         </span>
-        <div className="flex gap-3">
-          {checks.map((c) => (
-            <span key={c.label} className={`text-xs ${c.ok ? 'text-emerald-500' : 'text-slate-400'}`}>
-              {c.ok ? '✓' : '✗'} {c.label}
-            </span>
-          ))}
-        </div>
+        {checks.map((c) => (
+          <span key={c.label} className={`text-xs ${c.ok ? 'text-emerald-500' : 'text-slate-400'}`}>
+            {c.ok ? '✓' : '✗'} {c.label}
+          </span>
+        ))}
       </div>
     </div>
   );
@@ -126,7 +124,7 @@ export default function Register() {
         </div>
 
         {/* Form panel */}
-        <div className="flex items-center justify-center p-6 lg:p-12 bg-white order-1 lg:order-2">
+        <div className="flex items-center justify-center p-4 sm:p-6 lg:p-12 bg-white order-1 lg:order-2 min-h-screen lg:min-h-0">
           <motion.div
             variants={formVariants}
             initial="hidden"
@@ -134,8 +132,8 @@ export default function Register() {
             className="w-full max-w-md"
           >
             <motion.div variants={itemVariants}>
-              <h1 className="text-slate-800 text-3xl font-black mb-2">Create Account</h1>
-              <p className="text-slate-500 mb-8">Join DocAppoint — it's free and takes 30 seconds</p>
+              <h1 className="text-slate-800 text-2xl sm:text-3xl font-black mb-2">Create Account</h1>
+              <p className="text-slate-500 mb-6 sm:mb-8">Join DocAppoint — it's free and takes 30 seconds</p>
             </motion.div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

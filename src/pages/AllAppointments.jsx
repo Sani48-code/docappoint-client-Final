@@ -48,13 +48,13 @@ export default function AllAppointments() {
       </Helmet>
 
       {/* Page hero */}
-      <div className="bg-[#0A0F2C] pt-10 pb-16 relative overflow-hidden">
+      <div className="bg-[#0A0F2C] pt-8 sm:pt-10 pb-12 sm:pb-16 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: `radial-gradient(circle at 1px 1px, rgba(6,182,212,0.4) 1px, transparent 0)`, backgroundSize: '35px 35px' }}
         />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative text-center">
           <span className="section-label">Our Specialists</span>
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4">
             Find Your <span className="text-gradient">Doctor</span>
           </h1>
           <p className="text-white/50 max-w-lg mx-auto mb-8">

@@ -59,12 +59,12 @@ export default function DoctorDetails() {
       </Helmet>
 
       {/* Hero */}
-      <div className="bg-gradient-to-br from-[#0A0F2C] to-[#0F1A35] py-14 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#0A0F2C] to-[#0F1A35] py-10 sm:py-14 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: `radial-gradient(circle at 1px 1px, rgba(6,182,212,0.4) 1px, transparent 0)`, backgroundSize: '35px 35px' }}
         />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid lg:grid-cols-2 gap-10 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 items-center">
             {/* Image */}
             <motion.div
               initial={{ opacity: 0, x: -40 }}
@@ -73,7 +73,7 @@ export default function DoctorDetails() {
               className="flex justify-center lg:justify-start"
             >
               <div className="relative">
-                <div className="w-72 h-80 lg:w-80 lg:h-96 rounded-3xl overflow-hidden border-2 border-accent/30 shadow-2xl shadow-accent/20">
+                <div className="w-64 h-72 sm:w-72 sm:h-80 lg:w-80 lg:h-96 rounded-3xl overflow-hidden border-2 border-accent/30 shadow-2xl shadow-accent/20">
                   <img src={displayDoctor.image} alt={displayDoctor.name} className="w-full h-full object-cover object-top" />
                 </div>
                 {/* Rating overlay */}
@@ -98,7 +98,7 @@ export default function DoctorDetails() {
               <span className="bg-accent/10 border border-accent/30 text-accent text-xs font-bold px-4 py-1.5 rounded-full mb-4 inline-block">
                 {displayDoctor.specialty}
               </span>
-              <h1 className="text-3xl lg:text-4xl font-black text-white mb-2">{displayDoctor.name}</h1>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white mb-2">{displayDoctor.name}</h1>
               <p className="text-white/60 mb-4 flex items-center gap-2">
                 <FaHospitalAlt className="text-accent text-base" />
                 {displayDoctor.hospital}
@@ -149,7 +149,7 @@ export default function DoctorDetails() {
       </div>
 
       {/* Details section */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Stats row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           {[

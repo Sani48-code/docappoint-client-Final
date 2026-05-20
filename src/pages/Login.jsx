@@ -134,7 +134,7 @@ export default function Login() {
         </div>
 
         {/* Right form panel */}
-        <div className="flex items-center justify-center p-6 lg:p-12 bg-white">
+        <div className="flex items-center justify-center p-4 sm:p-6 lg:p-12 bg-white min-h-screen lg:min-h-0">
           <motion.div
             variants={formVariants}
             initial="hidden"
@@ -142,8 +142,8 @@ export default function Login() {
             className="w-full max-w-md"
           >
             <motion.div variants={itemVariants}>
-              <h1 className="text-slate-800 text-3xl font-black mb-2">Welcome Back 👋</h1>
-              <p className="text-slate-500 mb-8">Sign in to manage your appointments</p>
+              <h1 className="text-slate-800 text-2xl sm:text-3xl font-black mb-2">Welcome Back 👋</h1>
+              <p className="text-slate-500 mb-6 sm:mb-8">Sign in to manage your appointments</p>
             </motion.div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">

@@ -83,7 +83,7 @@ export default function HowItWorks() {
         <div
           data-aos="fade-up"
           data-aos-delay="300"
-          className="mt-16 relative overflow-hidden rounded-3xl bg-gradient-to-r from-dark to-[#0F1A35] p-8 md:p-12 text-center"
+          className="mt-12 md:mt-16 relative overflow-hidden rounded-3xl bg-gradient-to-r from-dark to-[#0F1A35] p-6 sm:p-8 md:p-12 text-center"
         >
           <div className="absolute inset-0 opacity-10"
             style={{
@@ -93,7 +93,7 @@ export default function HowItWorks() {
           />
           <div className="relative">
             <p className="text-accent font-semibold text-sm uppercase tracking-widest mb-3">Ready to get started?</p>
-            <h3 className="text-white text-3xl md:text-4xl font-black mb-4">
+            <h3 className="text-white text-2xl sm:text-3xl md:text-4xl font-black mb-4">
               Book Your Appointment <span className="text-gradient">Today</span>
             </h3>
             <p className="text-white/50 mb-8 max-w-md mx-auto">
