@@ -6,15 +6,6 @@ import AOS from 'aos';
 import AppointmentCard from '../components/AppointmentCard';
 import SkeletonCard from '../components/SkeletonCard';
 
-const FALLBACK_DOCTORS = [
-  { _id: '1', name: 'Dr. Sarah Wilson', specialty: 'Cardiologist', hospital: 'City Heart Institute', fee: 120, experience: 12, rating: 4.9, image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80', availability: ['Mon', 'Wed', 'Fri'] },
-  { _id: '2', name: 'Dr. James Chen', specialty: 'Neurologist', hospital: 'NeuroCore Medical', fee: 150, experience: 15, rating: 4.8, image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80', availability: ['Tue', 'Thu'] },
-  { _id: '3', name: 'Dr. Emily Ross', specialty: 'Pediatrician', hospital: "Children's Health Hub", fee: 90, experience: 8, rating: 4.7, image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=80', availability: ['Mon', 'Tue', 'Thu'] },
-  { _id: '4', name: 'Dr. Michael Torres', specialty: 'Dermatologist', hospital: 'SkinCare Clinic', fee: 100, experience: 10, rating: 4.6, image: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400&q=80', availability: ['Mon', 'Wed'] },
-  { _id: '5', name: 'Dr. Aisha Patel', specialty: 'Orthopedist', hospital: 'Bone & Joint Center', fee: 130, experience: 11, rating: 4.8, image: 'https://images.unsplash.com/photo-1614608682850-e0d6ed316d47?w=400&q=80', availability: ['Tue', 'Fri'] },
-  { _id: '6', name: 'Dr. Robert Kim', specialty: 'Psychiatrist', hospital: 'Mind Wellness Institute', fee: 160, experience: 14, rating: 4.7, image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&q=80', availability: ['Wed', 'Thu', 'Fri'] },
-];
-
 export default function AllAppointments() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('');
@@ -23,32 +14,31 @@ export default function AllAppointments() {
     AOS.init({ duration: 600, once: true });
   }, []);
 
-  const { data: doctors, isLoading } = useQuery({
+  const { data: doctors, isLoading, isError } = useQuery({
     queryKey: ['all-doctors'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/doctors`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/doctors`);
       return res.data;
     },
     retry: false,
-    placeholderData: FALLBACK_DOCTORS,
   });
 
-  const displayDoctors = (doctors && doctors.length > 0) ? doctors : FALLBACK_DOCTORS;
+  const list = doctors || [];
 
   const filtered = useMemo(() => {
-    let list = [...displayDoctors];
+    let result = [...list];
     if (search) {
-      list = list.filter((d) =>
+      result = result.filter((d) =>
         d.name.toLowerCase().includes(search.toLowerCase()) ||
         d.specialty.toLowerCase().includes(search.toLowerCase())
       );
     }
-    if (sort === 'fee-asc') list.sort((a, b) => a.fee - b.fee);
-    else if (sort === 'fee-desc') list.sort((a, b) => b.fee - a.fee);
-    else if (sort === 'exp-desc') list.sort((a, b) => b.experience - a.experience);
-    else if (sort === 'rating-desc') list.sort((a, b) => b.rating - a.rating);
-    return list;
-  }, [displayDoctors, search, sort]);
+    if (sort === 'fee-asc') result.sort((a, b) => a.fee - b.fee);
+    else if (sort === 'fee-desc') result.sort((a, b) => b.fee - a.fee);
+    else if (sort === 'exp-desc') result.sort((a, b) => b.experience - a.experience);
+    else if (sort === 'rating-desc') result.sort((a, b) => b.rating - a.rating);
+    return result;
+  }, [list, search, sort]);
 
   return (
     <>
@@ -68,7 +58,7 @@ export default function AllAppointments() {
             Find Your <span className="text-gradient">Doctor</span>
           </h1>
           <p className="text-white/50 max-w-lg mx-auto mb-8">
-            Browse {displayDoctors.length}+ verified specialists. Use the filters below to narrow your search.
+            Browse verified specialists. Use the filters below to narrow your search.
           </p>
 
           {/* Search & Filter */}
@@ -113,42 +103,56 @@ export default function AllAppointments() {
       {/* Results */}
       <div className="bg-slate-50 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Results count */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <span className="bg-accent/10 text-accent font-bold text-sm px-3 py-1 rounded-full">
-                {isLoading ? '...' : filtered.length} results
-              </span>
-              {search && (
-                <span className="text-slate-500 text-sm">for "{search}"</span>
-              )}
-            </div>
-          </div>
 
-          {isLoading ? (
+          {isError ? (
+            <div className="text-center py-20">
+              <div className="text-6xl mb-4">⚠️</div>
+              <h3 className="text-slate-700 font-bold text-xl mb-2">Failed to load doctors</h3>
+              <p className="text-slate-500 text-sm">Please check your connection and try again.</p>
+            </div>
+          ) : isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {[1, 2, 3, 4, 5, 6].map((n) => <SkeletonCard key={n} />)}
             </div>
-          ) : filtered.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-slate-700 font-bold text-xl mb-2">No doctors found</h3>
-              <p className="text-slate-500 text-sm mb-6">Try a different name or specialty</p>
-              <button
-                onClick={() => { setSearch(''); setSort(''); }}
-                className="btn-primary"
-              >
-                Clear Filters
-              </button>
-            </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {filtered.map((doctor, i) => (
-                <div key={doctor._id} data-aos="fade-up" data-aos-delay={i * 50}>
-                  <AppointmentCard doctor={doctor} />
+            <>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2">
+                  <span className="bg-accent/10 text-accent font-bold text-sm px-3 py-1 rounded-full">
+                    {filtered.length} results
+                  </span>
+                  {search && (
+                    <span className="text-slate-500 text-sm">for "{search}"</span>
+                  )}
                 </div>
-              ))}
-            </div>
+              </div>
+
+              {filtered.length === 0 ? (
+                <div className="text-center py-20">
+                  <div className="text-6xl mb-4">🔍</div>
+                  <h3 className="text-slate-700 font-bold text-xl mb-2">No doctors found</h3>
+                  <p className="text-slate-500 text-sm mb-6">
+                    {list.length === 0 ? 'No doctors available right now.' : 'Try a different name or specialty.'}
+                  </p>
+                  {list.length > 0 && (
+                    <button
+                      onClick={() => { setSearch(''); setSort(''); }}
+                      className="btn-primary"
+                    >
+                      Clear Filters
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {filtered.map((doctor, i) => (
+                    <div key={doctor._id} data-aos="fade-up" data-aos-delay={i * 50}>
+                      <AppointmentCard doctor={doctor} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -6,11 +6,6 @@ import { useAuth } from '../../hooks/useAuth';
 import UpdateBookingModal from '../../components/UpdateBookingModal';
 import toast from 'react-hot-toast';
 
-const FALLBACK_BOOKINGS = [
-  { _id: 'b1', doctorName: 'Dr. Sarah Wilson', userEmail: 'user@example.com', patientName: 'John Doe', date: '2026-06-15', time: '9:00 AM', phone: '+1 234 567 8900', status: 'Confirmed', specialty: 'Cardiologist', fee: 120 },
-  { _id: 'b2', doctorName: 'Dr. James Chen', userEmail: 'user@example.com', patientName: 'John Doe', date: '2026-06-20', time: '2:00 PM', phone: '+1 234 567 8900', status: 'Pending', specialty: 'Neurologist', fee: 150 },
-];
-
 const statusColors = {
   Confirmed: 'bg-emerald-100 text-emerald-700 border-emerald-200',
   Pending: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -26,25 +21,24 @@ export default function MyBookings() {
   const { data: bookings, isLoading } = useQuery({
     queryKey: ['bookings', user?.email],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/bookings?email=${user?.email}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookings?email=${user?.email}`);
       return res.data;
     },
     retry: false,
     enabled: !!user?.email,
-    placeholderData: FALLBACK_BOOKINGS,
   });
 
-  const displayBookings = (bookings && bookings.length > 0) ? bookings : FALLBACK_BOOKINGS;
+  const displayBookings = bookings || [];
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => axios.delete(`${import.meta.env.VITE_API_URL}/bookings/${id}`),
+    mutationFn: (id) => axios.delete(`${import.meta.env.VITE_API_URL}/api/bookings/${id}`),
     onSuccess: () => queryClient.invalidateQueries(['bookings']),
   });
 
   const handleDelete = (booking) => {
     const id = booking._id;
     queryClient.setQueryData(['bookings', user?.email], (old) =>
-      (old || displayBookings).filter((b) => b._id !== id)
+      (old || []).filter((b) => b._id !== id)
     );
 
     const toastId = toast(

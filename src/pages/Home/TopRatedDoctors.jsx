@@ -7,28 +7,21 @@ import 'aos/dist/aos.css';
 import DoctorCard from '../../components/DoctorCard';
 import SkeletonCard from '../../components/SkeletonCard';
 
-const FALLBACK_DOCTORS = [
-  { _id: '1', name: 'Dr. Sarah Wilson', specialty: 'Cardiologist', hospital: 'City Heart Institute', fee: 120, experience: 12, rating: 4.9, image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80', availability: ['9:00 AM', '11:00 AM', '2:00 PM'] },
-  { _id: '2', name: 'Dr. James Chen', specialty: 'Neurologist', hospital: 'NeuroCore Medical', fee: 150, experience: 15, rating: 4.8, image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80', availability: ['10:00 AM', '1:00 PM', '4:00 PM'] },
-  { _id: '3', name: 'Dr. Emily Ross', specialty: 'Pediatrician', hospital: 'Children\'s Health Hub', fee: 90, experience: 8, rating: 4.7, image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=80', availability: ['9:00 AM', '11:30 AM', '3:00 PM'] },
-];
-
 export default function TopRatedDoctors() {
   useEffect(() => {
     AOS.init({ duration: 700, once: true, offset: 80 });
   }, []);
 
-  const { data: doctors, isLoading } = useQuery({
+  const { data: doctors, isLoading, isError } = useQuery({
     queryKey: ['top-doctors'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/doctors?top=true`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/doctors?top=true`);
       return res.data;
     },
     retry: false,
-    placeholderData: FALLBACK_DOCTORS,
   });
 
-  const displayDoctors = (doctors && doctors.length > 0) ? doctors.slice(0, 3) : FALLBACK_DOCTORS;
+  const displayDoctors = doctors?.slice(0, 3) || [];
 
   return (
     <section className="py-20 bg-white">
@@ -45,15 +38,27 @@ export default function TopRatedDoctors() {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-          {isLoading
-            ? [1, 2, 3].map((n) => <SkeletonCard key={n} />)
-            : displayDoctors.map((doctor, i) => (
-              <div key={doctor._id} data-aos="fade-up" data-aos-delay={i * 120}>
-                <DoctorCard doctor={doctor} />
-              </div>
-            ))}
-        </div>
+        {isError ? (
+          <div className="text-center py-12">
+            <p className="text-slate-400 text-sm">Unable to load doctors right now. Please try again later.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+            {isLoading
+              ? [1, 2, 3].map((n) => <SkeletonCard key={n} />)
+              : displayDoctors.length === 0
+              ? (
+                <div className="col-span-3 text-center py-12">
+                  <p className="text-slate-400 text-sm">No top-rated doctors available right now.</p>
+                </div>
+              )
+              : displayDoctors.map((doctor, i) => (
+                <div key={doctor._id} data-aos="fade-up" data-aos-delay={i * 120}>
+                  <DoctorCard doctor={doctor} />
+                </div>
+              ))}
+          </div>
+        )}
 
         {/* View All CTA */}
         <div className="text-center mt-12" data-aos="fade-up" data-aos-delay="200">

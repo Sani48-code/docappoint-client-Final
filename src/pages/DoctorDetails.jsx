@@ -10,11 +10,6 @@ import Spinner from '../components/Spinner';
 import toast from 'react-hot-toast';
 import { FaStar, FaHospitalAlt, FaMapMarkerAlt } from 'react-icons/fa';
 
-const FALLBACK_DOCTORS = {
-  '1': { _id: '1', name: 'Dr. Sarah Wilson', specialty: 'Cardiologist', hospital: 'City Heart Institute', fee: 120, experience: 12, rating: 4.9, location: 'New York, NY', image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&q=80', availability: ['9:00 AM', '11:00 AM', '2:00 PM', '4:00 PM'], description: 'Dr. Sarah Wilson is a board-certified cardiologist with 12 years of experience treating complex heart conditions. She completed her fellowship at Johns Hopkins Hospital and specializes in preventive cardiology, heart failure management, and advanced echocardiography. Dr. Wilson is known for her patient-first approach and comprehensive treatment plans.' },
-  '2': { _id: '2', name: 'Dr. James Chen', specialty: 'Neurologist', hospital: 'NeuroCore Medical', fee: 150, experience: 15, rating: 4.8, location: 'Los Angeles, CA', image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=600&q=80', availability: ['10:00 AM', '1:00 PM', '4:00 PM'], description: 'Dr. James Chen is a leading neurologist specializing in movement disorders, epilepsy, and neurodegenerative diseases. With 15 years of clinical experience and over 80 published research papers, he brings cutting-edge knowledge to patient care. He trained at UCSF and has received multiple excellence awards in neurology.' },
-  '3': { _id: '3', name: 'Dr. Emily Ross', specialty: 'Pediatrician', hospital: "Children's Health Hub", fee: 90, experience: 8, rating: 4.7, location: 'Chicago, IL', image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=600&q=80', availability: ['9:00 AM', '11:30 AM', '3:00 PM', '5:00 PM'], description: "Dr. Emily Ross is a compassionate pediatrician dedicated to the health and wellbeing of children from birth through adolescence. She holds certifications in pediatric emergency medicine and developmental pediatrics. Parents appreciate her warm communication style and thorough approach to child healthcare." },
-};
 
 function StarRating({ rating }) {
   return (
@@ -33,14 +28,13 @@ export default function DoctorDetails() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
 
-  const { data: doctor, isLoading } = useQuery({
+  const { data: doctor, isLoading, isError } = useQuery({
     queryKey: ['doctor', id],
     queryFn: async () => {
       const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/doctors/${id}`);
       return res.data;
     },
     retry: false,
-    placeholderData: FALLBACK_DOCTORS[id] || FALLBACK_DOCTORS['1'],
   });
 
   const handleBooking = () => {
@@ -53,9 +47,9 @@ export default function DoctorDetails() {
   };
 
   if (isLoading) return <Spinner />;
-  if (!doctor) return <div className="text-center py-20 text-slate-500">Doctor not found.</div>;
+  if (isError || !doctor) return <div className="text-center py-20 text-slate-500">Doctor not found.</div>;
 
-  const displayDoctor = (doctor && doctor._id) ? doctor : (FALLBACK_DOCTORS[id] || FALLBACK_DOCTORS['1']);
+  const displayDoctor = doctor;
 
   return (
     <>
