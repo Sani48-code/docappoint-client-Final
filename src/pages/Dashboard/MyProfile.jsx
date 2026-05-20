@@ -5,6 +5,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { FaEnvelope, FaTimes } from 'react-icons/fa';
 
 export default function MyProfile() {
   const { user, updateUser } = useAuth();
@@ -83,9 +84,7 @@ export default function MyProfile() {
 
           <h2 className="text-slate-800 font-black text-2xl mb-1">{user?.name}</h2>
           <p className="text-slate-500 text-sm flex items-center gap-2 mb-6">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
+            <FaEnvelope className="text-base" />
             {user?.email}
           </p>
 
@@ -140,9 +139,7 @@ export default function MyProfile() {
               <div className="bg-gradient-to-r from-primary to-accent p-5 flex items-center justify-between">
                 <h3 className="text-white font-bold text-lg">Edit Profile</h3>
                 <button onClick={() => setEditOpen(false)} className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <FaTimes className="text-sm" />
                 </button>
               </div>
               <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">

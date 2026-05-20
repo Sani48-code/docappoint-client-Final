@@ -2,25 +2,18 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../../hooks/useAuth';
 import toast from 'react-hot-toast';
+import { FaCalendarAlt, FaUserMd, FaSignOutAlt } from 'react-icons/fa';
 
 const sidebarLinks = [
   {
     to: '/dashboard/bookings',
     label: 'My Bookings',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-    ),
+    icon: <FaCalendarAlt className="text-lg" />,
   },
   {
     to: '/dashboard/profile',
     label: 'My Profile',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>
-    ),
+    icon: <FaUserMd className="text-lg" />,
   },
 ];
 
@@ -85,9 +78,7 @@ export default function Dashboard() {
               onClick={handleLogout}
               className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-rose-400 hover:bg-rose-500/10 text-sm font-medium transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
+              <FaSignOutAlt className="text-lg" />
               Logout
             </button>
           </div>

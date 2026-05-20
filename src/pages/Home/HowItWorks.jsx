@@ -1,38 +1,27 @@
 import { useEffect } from 'react';
 import AOS from 'aos';
+import { FaSearch, FaCalendarAlt, FaHeartbeat, FaArrowRight } from 'react-icons/fa';
 
 const steps = [
   {
     number: '01',
     title: 'Search a Doctor',
     desc: 'Browse our curated list of top-rated doctors. Filter by specialty, fee, location, and availability.',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-    ),
+    icon: <FaSearch className="text-3xl" />,
     aosAnim: 'fade-right',
   },
   {
     number: '02',
     title: 'Book Appointment',
     desc: 'Select your preferred date and time slot. Fill in patient details and confirm your booking instantly.',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-    ),
+    icon: <FaCalendarAlt className="text-3xl" />,
     aosAnim: 'fade-up',
   },
   {
     number: '03',
     title: 'Get Treatment',
     desc: 'Visit the doctor at the scheduled time. Manage your booking history from your personal dashboard.',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-      </svg>
-    ),
+    icon: <FaHeartbeat className="text-3xl" />,
     aosAnim: 'fade-left',
   },
 ];
@@ -115,9 +104,7 @@ export default function HowItWorks() {
               className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-accent text-white font-bold px-8 py-4 rounded-2xl hover:shadow-2xl hover:shadow-cyan-500/40 transition-all duration-300 hover:-translate-y-1"
             >
               Get Started — It's Free
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
+              <FaArrowRight />
             </a>
           </div>
         </div>
