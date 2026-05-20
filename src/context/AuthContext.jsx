@@ -1,53 +1,52 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { authClient } from '../lib/authClient';
+
+const TOKEN_KEY = 'docappoint_token';
+const API = import.meta.env.VITE_API_URL;
 
 export const AuthContext = createContext(null);
 
-const AUTH_KEY = 'docappoint_user';
+async function fetchMe(token) {
+  const res = await fetch(`${API}/api/auth/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Session expired');
+  return res.json();
+}
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // On app load: check localStorage for token and fetch user
   useEffect(() => {
-    const init = async () => {
-      // 1. Check localStorage (email/password JWT flow)
-      try {
-        const stored = localStorage.getItem(AUTH_KEY);
-        if (stored) {
-          setUser(JSON.parse(stored));
-          setLoading(false);
-          return;
-        }
-      } catch {
-        localStorage.removeItem(AUTH_KEY);
-      }
-
-      // 2. Check Better Auth session (Google OAuth flow — set after OAuth callback)
-      try {
-        const { data } = await authClient.getSession();
-        if (data?.user) {
-          const userData = {
-            name: data.user.name,
-            email: data.user.email,
-            photoURL: data.user.image ?? null,
-            _id: data.user.id,
-          };
-          setUser(userData);
-          localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
-        }
-      } catch {
-        // no Better Auth session present
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    init();
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    fetchMe(token)
+      .then((userData) => setUser(userData))
+      .catch(() => localStorage.removeItem(TOKEN_KEY))
+      .finally(() => setLoading(false));
   }, []);
 
+  // POST /api/auth/register
+  const register = async (name, email, password, photo) => {
+    const res = await fetch(`${API}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password, photo }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || 'Registration failed');
+    }
+    return res.json();
+  };
+
+  // POST /api/auth/login
   const login = async (email, password) => {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+    const res = await fetch(`${API}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -57,44 +56,49 @@ export default function AuthProvider({ children }) {
       throw new Error(err.message || 'Login failed');
     }
     const data = await res.json();
-    const userData = { ...data.user, token: data.token };
-    setUser(userData);
-    localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
-    return userData;
+    localStorage.setItem(TOKEN_KEY, data.token);
+    setUser(data.user);
+    return data.user;
   };
 
-  const register = async ({ name, email, photoURL, password }) => {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
+  // POST /api/auth/google — called after Google OAuth popup succeeds
+  const googleLogin = async (googleUserData) => {
+    const res = await fetch(`${API}/api/auth/google`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, photoURL, password }),
+      body: JSON.stringify(googleUserData),
     });
     if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.message || 'Registration failed');
+      throw new Error(err.message || 'Google login failed');
     }
-    return res.json();
+    const data = await res.json();
+    localStorage.setItem(TOKEN_KEY, data.token);
+    setUser(data.user);
+    return data.user;
   };
 
-  const logout = async () => {
+  // Clear token from localStorage
+  const logout = () => {
     setUser(null);
-    localStorage.removeItem(AUTH_KEY);
-    // Clear Better Auth session cookie if one exists (Google OAuth users)
-    try {
-      await authClient.signOut();
-    } catch {
-      // ignore — may not have a Better Auth session
-    }
+    localStorage.removeItem(TOKEN_KEY);
+  };
+
+  // GET /api/auth/me — refresh user from server
+  const getUser = async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) return null;
+    const userData = await fetchMe(token);
+    setUser(userData);
+    return userData;
   };
 
   const updateUser = (updates) => {
-    const updated = { ...user, ...updates };
-    setUser(updated);
-    localStorage.setItem(AUTH_KEY, JSON.stringify(updated));
+    setUser((prev) => ({ ...prev, ...updates }));
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, login, register, googleLogin, logout, getUser, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

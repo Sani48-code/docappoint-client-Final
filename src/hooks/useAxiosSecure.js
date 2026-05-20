@@ -2,17 +2,20 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import { useAuth } from './useAuth';
 
+const TOKEN_KEY = 'docappoint_token';
+
 const axiosSecure = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
 export default function useAxiosSecure() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
 
   useEffect(() => {
     const reqInterceptor = axiosSecure.interceptors.request.use((config) => {
-      if (user?.token) {
-        config.headers.Authorization = `Bearer ${user.token}`;
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
       return config;
     });
@@ -31,7 +34,7 @@ export default function useAxiosSecure() {
       axiosSecure.interceptors.request.eject(reqInterceptor);
       axiosSecure.interceptors.response.eject(resInterceptor);
     };
-  }, [user, logout]);
+  }, [logout]);
 
   return axiosSecure;
 }

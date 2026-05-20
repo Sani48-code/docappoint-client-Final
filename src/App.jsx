@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AuthProvider from './context/AuthContext';
 import { HelmetProvider } from 'react-helmet-async';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,32 +16,34 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <AppRouter />
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 3000,
-              style: {
-                background: '#0F1A35',
-                color: '#fff',
-                border: '1px solid rgba(6,182,212,0.3)',
-                borderRadius: '12px',
-                fontSize: '14px',
-              },
-              success: {
-                iconTheme: { primary: '#06B6D4', secondary: '#fff' },
-              },
-              error: {
-                iconTheme: { primary: '#f43f5e', secondary: '#fff' },
-              },
-            }}
-          />
-        </AuthProvider>
-      </QueryClientProvider>
-    </HelmetProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <AppRouter />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 3000,
+                style: {
+                  background: '#0F1A35',
+                  color: '#fff',
+                  border: '1px solid rgba(6,182,212,0.3)',
+                  borderRadius: '12px',
+                  fontSize: '14px',
+                },
+                success: {
+                  iconTheme: { primary: '#06B6D4', secondary: '#fff' },
+                },
+                error: {
+                  iconTheme: { primary: '#f43f5e', secondary: '#fff' },
+                },
+              }}
+            />
+          </AuthProvider>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </GoogleOAuthProvider>
   );
 }
 

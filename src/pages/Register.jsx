@@ -67,12 +67,7 @@ export default function Register() {
 
   const onSubmit = async (data) => {
     try {
-      await registerUser({
-        name: data.name,
-        email: data.email,
-        photoURL: data.photoURL,
-        password: data.password,
-      });
+      await registerUser(data.name, data.email, data.password, data.photoURL);
       toast.success('Registration successful! Please login.');
       navigate('/login');
     } catch (err) {
