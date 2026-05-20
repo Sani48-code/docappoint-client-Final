@@ -33,12 +33,25 @@ export default function BookingModal({ doctor, onClose }) {
 
   const onSubmit = async (data) => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/bookings`, {
-        ...data,
-        doctorId: doctor._id,
-        userEmail: user.email,
-        fee: doctor.fee,
-      });
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/bookings`,
+        {
+          userEmail: user.email,
+          doctorName: data.doctorName,
+          patientName: data.patientName,
+          gender: data.gender,
+          phone: data.phone,
+          appointmentDate: data.date,
+          appointmentTime: data.time,
+          doctorId: doctor._id,
+          fee: doctor.fee,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('docappoint_token')}`,
+          },
+        }
+      );
       toast.success('Appointment booked successfully!');
       reset();
       onClose();
