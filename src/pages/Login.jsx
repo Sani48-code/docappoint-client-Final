@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
+import { authClient } from '../lib/authClient';
 
 const formVariants = {
   hidden: {},
@@ -171,7 +172,16 @@ export default function Login() {
               <motion.button
                 variants={itemVariants}
                 type="button"
-                onClick={() => toast('Google login requires backend OAuth setup.')}
+                onClick={async () => {
+                  try {
+                    await authClient.signIn.social({
+                      provider: 'google',
+                      callbackURL: '/',
+                    });
+                  } catch (err) {
+                    toast.error(err?.message || 'Google login failed. Please try again.');
+                  }
+                }}
                 className="w-full py-3.5 border-2 border-slate-200 hover:border-primary/40 rounded-xl flex items-center justify-center gap-3 text-slate-700 font-semibold hover:bg-slate-50 transition-all duration-200"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">

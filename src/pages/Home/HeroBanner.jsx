@@ -173,10 +173,10 @@ export default function HeroBanner() {
             </motion.div>
           </motion.div>
 
-          {/* Right — Floating UI Cards */}
+          {/* Right — Redesigned Floating Badges */}
           <div className="relative hidden lg:flex items-center justify-center">
-            {/* Doctor image placeholder with glow */}
             <div className="relative">
+              {/* Doctor image */}
               <div className="w-80 h-96 rounded-3xl bg-gradient-to-br from-primary/20 to-accent/20 border border-accent/20 overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=500&q=80"
@@ -185,47 +185,106 @@ export default function HeroBanner() {
                 />
               </div>
 
-              {/* Floating card: Rating */}
+              {/* Badge 1 — Available Today (top-left) */}
               <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute -top-4 -left-8 bg-white rounded-2xl shadow-2xl p-3 flex items-center gap-3 min-w-[160px]"
+                className="absolute -top-5 -left-10"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4, ease: 'easeOut' }}
               >
-                <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
-                  <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                </div>
-                <div>
-                  <div className="font-bold text-slate-800 text-sm">4.9 / 5.0</div>
-                  <div className="text-slate-500 text-xs">Patient Rating</div>
-                </div>
+                <motion.div
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+                  className="bg-white border-l-4 border-green-400 rounded-lg p-3 min-w-[178px]"
+                  style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.12)', backdropFilter: 'blur(8px)' }}
+                >
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                    <span className="text-green-600 font-semibold text-xs tracking-wide">Available Today</span>
+                  </div>
+                  <div className="text-slate-800 font-bold text-sm">Dr. Sarah Wilson</div>
+                  <div className="text-slate-400 text-xs mb-2">Cardiologist</div>
+                  <div className="flex items-center gap-1 text-[#0EA5E9] text-xs font-bold cursor-pointer">
+                    Book Now
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                </motion.div>
               </motion.div>
 
-              {/* Floating card: Available */}
+              {/* Badge 2 — Rating / Excellent (top-right) */}
               <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-                className="absolute -bottom-4 -right-6 bg-white rounded-2xl shadow-2xl p-3"
+                className="absolute -top-5 -right-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6, ease: 'easeOut' }}
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-emerald-600 font-bold text-xs">Available Now</span>
-                </div>
-                <div className="text-slate-700 font-semibold text-sm">Dr. Sarah Wilson</div>
-                <div className="text-slate-500 text-xs">Cardiologist</div>
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+                  className="bg-[#0F1A35] border border-cyan-500/20 rounded-lg p-3 min-w-[160px]"
+                  style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.3)', backdropFilter: 'blur(8px)' }}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-amber-400 text-base leading-none">★</span>
+                      <span className="text-white font-bold text-sm">4.9</span>
+                    </div>
+                    <span className="text-cyan-400 text-xs font-semibold">Excellent</span>
+                  </div>
+                  <div className="w-full bg-white/10 rounded-full h-1.5 mb-2">
+                    <div
+                      className="bg-gradient-to-r from-cyan-400 to-cyan-500 h-1.5 rounded-full"
+                      style={{ width: '98%' }}
+                    />
+                  </div>
+                  <div className="text-white/50 text-xs">Based on 2,400+ reviews</div>
+                </motion.div>
               </motion.div>
 
-              {/* Floating: Next appointment */}
+              {/* Badge 3 — Next Available Slot (bottom-left) */}
               <motion.div
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                className="absolute top-1/2 -right-10 -translate-y-1/2 bg-[#0A0F2C] border border-accent/20 rounded-2xl shadow-2xl p-3 min-w-[140px]"
+                className="absolute -bottom-5 -left-10"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.8, ease: 'easeOut' }}
               >
-                <div className="text-accent text-xs font-semibold mb-1">Next Slot</div>
-                <div className="text-white font-bold text-sm">Today, 2:00 PM</div>
-                <div className="text-white/50 text-xs">3 slots left</div>
+                <motion.div
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
+                  className="bg-white rounded-lg p-3 min-w-[168px]"
+                  style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.12)', backdropFilter: 'blur(8px)' }}
+                >
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <svg className="w-3.5 h-3.5 text-[#06B6D4]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-slate-500 text-xs font-semibold">Next Available Slot</span>
+                  </div>
+                  <div className="text-slate-800 font-bold text-sm">Today — 2:00 PM</div>
+                  <div className="text-[#06B6D4] text-xs font-medium mt-0.5">3 slots remaining</div>
+                </motion.div>
               </motion.div>
+
+              {/* Badge 4 — Patients Treated pill (bottom-right) */}
+              <motion.div
+                className="absolute -bottom-8 -right-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.0, ease: 'easeOut' }}
+              >
+                <motion.div
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
+                  className="bg-gradient-to-r from-cyan-500 to-sky-500 rounded-full px-4 py-2.5 flex items-center gap-2"
+                  style={{ boxShadow: '0 4px 20px rgba(6,182,212,0.35)' }}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  <span className="text-white font-bold text-sm whitespace-nowrap">✦ 50,000+ Patients Treated</span>
+                </motion.div>
+              </motion.div>
+
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { authClient } from '../lib/authClient';
 
 export const AuthContext = createContext(null);
 
@@ -9,14 +10,40 @@ export default function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(AUTH_KEY);
-      if (stored) setUser(JSON.parse(stored));
-    } catch {
-      localStorage.removeItem(AUTH_KEY);
-    } finally {
-      setLoading(false);
-    }
+    const init = async () => {
+      // 1. Check localStorage (email/password JWT flow)
+      try {
+        const stored = localStorage.getItem(AUTH_KEY);
+        if (stored) {
+          setUser(JSON.parse(stored));
+          setLoading(false);
+          return;
+        }
+      } catch {
+        localStorage.removeItem(AUTH_KEY);
+      }
+
+      // 2. Check Better Auth session (Google OAuth flow — set after OAuth callback)
+      try {
+        const { data } = await authClient.getSession();
+        if (data?.user) {
+          const userData = {
+            name: data.user.name,
+            email: data.user.email,
+            photoURL: data.user.image ?? null,
+            _id: data.user.id,
+          };
+          setUser(userData);
+          localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
+        }
+      } catch {
+        // no Better Auth session present
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    init();
   }, []);
 
   const login = async (email, password) => {
@@ -49,9 +76,15 @@ export default function AuthProvider({ children }) {
     return res.json();
   };
 
-  const logout = () => {
+  const logout = async () => {
     setUser(null);
     localStorage.removeItem(AUTH_KEY);
+    // Clear Better Auth session cookie if one exists (Google OAuth users)
+    try {
+      await authClient.signOut();
+    } catch {
+      // ignore — may not have a Better Auth session
+    }
   };
 
   const updateUser = (updates) => {
