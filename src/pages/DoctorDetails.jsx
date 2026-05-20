@@ -36,7 +36,7 @@ export default function DoctorDetails() {
   const { data: doctor, isLoading } = useQuery({
     queryKey: ['doctor', id],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/doctors/${id}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/doctors/${id}`);
       return res.data;
     },
     retry: false,
