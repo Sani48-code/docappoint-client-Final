@@ -44,7 +44,7 @@ Doctors and appointments are stored in a MongoDB database and protected using au
 
 # 👨‍💻 Developer
 
-SANi
+SANI
 
 Web & Automation Engineer
 
