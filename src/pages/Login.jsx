@@ -5,7 +5,8 @@ import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
-import { useGoogleLogin } from '@react-oauth/google';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '../firebase/firebase.config';
 
 const formVariants = {
   hidden: {},
@@ -30,6 +31,7 @@ export default function Login() {
     formState: { errors, isSubmitting },
   } = useForm();
 
+  // Email / password login
   const onSubmit = async (data) => {
     try {
       await login(data.email, data.password);
@@ -40,37 +42,30 @@ export default function Login() {
     }
   };
 
-  const handleGoogleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      setGoogleLoading(true);
-      try {
-        // Fetch user profile from Google using the access token
-        const profileRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-        });
-        if (!profileRes.ok) throw new Error('Failed to fetch Google profile');
-        const profile = await profileRes.json();
+  // Firebase Google popup → POST /api/auth/google → save JWT
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const firebaseUser = result.user;
 
-        // Send Google user data to our server → returns JWT
-        await googleLogin({
-          name: profile.name,
-          email: profile.email,
-          photo: profile.picture,
-          googleId: profile.sub,
-        });
+      await googleLogin({
+        name: firebaseUser.displayName,
+        email: firebaseUser.email,
+        photo: firebaseUser.photoURL,
+      });
 
-        toast.success('Logged in with Google!');
-        navigate(from, { replace: true });
-      } catch (err) {
+      toast.success('Logged in with Google!');
+      navigate(from, { replace: true });
+    } catch (err) {
+      // Silently ignore popup closed by user
+      if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
         toast.error(err.message || 'Google login failed. Please try again.');
-      } finally {
-        setGoogleLoading(false);
       }
-    },
-    onError: () => {
-      toast.error('Google login was cancelled or failed.');
-    },
-  });
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   return (
     <>
@@ -78,10 +73,15 @@ export default function Login() {
         <title>Login – DocAppoint</title>
       </Helmet>
       <div className="min-h-screen grid lg:grid-cols-2">
-        {/* Left panel */}
+
+        {/* Left decorative panel */}
         <div className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-[#0A0F2C] to-[#0F1A35] p-12 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10"
-            style={{ backgroundImage: `radial-gradient(circle at 1px 1px, rgba(6,182,212,0.4) 1px, transparent 0)`, backgroundSize: '35px 35px' }}
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(6,182,212,0.4) 1px, transparent 0)`,
+              backgroundSize: '35px 35px',
+            }}
           />
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-80 h-80 bg-accent/15 rounded-full blur-[80px]" />
 
@@ -111,8 +111,8 @@ export default function Login() {
           <div className="relative grid grid-cols-3 gap-4">
             {[
               { value: '1,200+', label: 'Doctors' },
-              { value: '50K+', label: 'Patients' },
-              { value: '4.9★', label: 'Rating' },
+              { value: '50K+',   label: 'Patients' },
+              { value: '4.9★',   label: 'Rating' },
             ].map((stat) => (
               <div key={stat.label} className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
                 <div className="text-white font-black text-lg">{stat.value}</div>
@@ -136,8 +136,11 @@ export default function Login() {
             </motion.div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              {/* Email */}
               <motion.div variants={itemVariants}>
-                <label className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-2 block">Email Address</label>
+                <label className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-2 block">
+                  Email Address
+                </label>
                 <input
                   {...register('email', {
                     required: 'Email is required',
@@ -150,6 +153,7 @@ export default function Login() {
                 {errors.email && <p className="text-rose-500 text-xs mt-1.5">{errors.email.message}</p>}
               </motion.div>
 
+              {/* Password */}
               <motion.div variants={itemVariants}>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-bold text-slate-600 uppercase tracking-wide">Password</label>
@@ -184,6 +188,7 @@ export default function Login() {
                 {errors.password && <p className="text-rose-500 text-xs mt-1.5">{errors.password.message}</p>}
               </motion.div>
 
+              {/* Submit */}
               <motion.button
                 variants={itemVariants}
                 type="submit"
@@ -200,11 +205,11 @@ export default function Login() {
                 <div className="flex-1 h-px bg-slate-200" />
               </motion.div>
 
-              {/* Google login */}
+              {/* Google login — Firebase signInWithPopup */}
               <motion.button
                 variants={itemVariants}
                 type="button"
-                onClick={() => handleGoogleLogin()}
+                onClick={handleGoogleLogin}
                 disabled={googleLoading}
                 className="w-full py-3.5 border-2 border-slate-200 hover:border-primary/40 rounded-xl flex items-center justify-center gap-3 text-slate-700 font-semibold hover:bg-slate-50 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
               >
@@ -212,10 +217,10 @@ export default function Login() {
                   <span className="w-5 h-5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                   </svg>
                 )}
                 {googleLoading ? 'Connecting...' : 'Continue with Google'}
@@ -230,6 +235,7 @@ export default function Login() {
             </motion.p>
           </motion.div>
         </div>
+
       </div>
     </>
   );
