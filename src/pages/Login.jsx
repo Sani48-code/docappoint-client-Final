@@ -18,7 +18,7 @@ const itemVariants = {
 };
 
 export default function Login() {
-  const { login, googleLogin } = useAuth();
+  const { login, getUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/';
@@ -42,24 +42,44 @@ export default function Login() {
     }
   };
 
-  // Firebase Google popup → POST /api/auth/google → save JWT
+  // Firebase Google popup → POST /api/auth/google → save JWT → hydrate user
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     try {
+      // Step 1: Firebase popup
       const result = await signInWithPopup(auth, googleProvider);
-      const firebaseUser = result.user;
+      const user = result.user;
 
-      await googleLogin({
-        name: firebaseUser.displayName,
-        email: firebaseUser.email,
-        photo: firebaseUser.photoURL,
+      // Step 2: Send Firebase user to our server
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: user.displayName,
+          email: user.email,
+          photo: user.photoURL,
+        }),
       });
 
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || `Server error (${response.status})`);
+      }
+
+      // Step 3: Save token to localStorage
+      const data = await response.json();
+      localStorage.setItem('docappoint_token', data.token);
+
+      // Step 4: Hydrate AuthContext user state from /api/auth/me
+      await getUser();
+
       toast.success('Logged in with Google!');
-      navigate(from, { replace: true });
+      navigate('/');
     } catch (err) {
-      // Silently ignore popup closed by user
-      if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
+      if (
+        err.code !== 'auth/popup-closed-by-user' &&
+        err.code !== 'auth/cancelled-popup-request'
+      ) {
         toast.error(err.message || 'Google login failed. Please try again.');
       }
     } finally {
@@ -205,7 +225,7 @@ export default function Login() {
                 <div className="flex-1 h-px bg-slate-200" />
               </motion.div>
 
-              {/* Google login — Firebase signInWithPopup */}
+              {/* Google login */}
               <motion.button
                 variants={itemVariants}
                 type="button"

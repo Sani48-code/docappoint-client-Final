@@ -17,7 +17,7 @@ export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // On app load: check localStorage for token and fetch user
+  // On app load: check localStorage for token and restore user
   useEffect(() => {
     const token = localStorage.getItem(TOKEN_KEY);
     if (!token) {
@@ -61,36 +61,25 @@ export default function AuthProvider({ children }) {
     return data.user;
   };
 
-  // POST /api/auth/google — called after Google OAuth popup succeeds
-  const googleLogin = async (googleUserData) => {
-    const res = await fetch(`${API}/api/auth/google`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(googleUserData),
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.message || 'Google login failed');
-    }
-    const data = await res.json();
-    localStorage.setItem(TOKEN_KEY, data.token);
-    setUser(data.user);
-    return data.user;
-  };
-
-  // Clear token from localStorage
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem(TOKEN_KEY);
-  };
-
-  // GET /api/auth/me — refresh user from server
+  // Called after token is saved externally — fetches /api/auth/me and updates state
   const getUser = async () => {
     const token = localStorage.getItem(TOKEN_KEY);
     if (!token) return null;
-    const userData = await fetchMe(token);
-    setUser(userData);
-    return userData;
+    try {
+      const userData = await fetchMe(token);
+      setUser(userData);
+      return userData;
+    } catch {
+      localStorage.removeItem(TOKEN_KEY);
+      setUser(null);
+      return null;
+    }
+  };
+
+  // Clear token and user state
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem(TOKEN_KEY);
   };
 
   const updateUser = (updates) => {
@@ -98,7 +87,7 @@ export default function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, googleLogin, logout, getUser, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, login, register, getUser, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
