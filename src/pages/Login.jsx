@@ -52,6 +52,7 @@ export default function Login() {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           name: user.displayName,
           email: user.email,
@@ -61,8 +62,6 @@ export default function Login() {
 
       if (!response.ok) throw new Error('Server error');
 
-      const data = await response.json();
-      localStorage.setItem('docappoint_token', data.token);
       await getUser();
       toast.success('Login successful!');
       navigate('/');

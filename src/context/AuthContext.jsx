@@ -1,13 +1,14 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
-const TOKEN_KEY = 'docappoint_token';
 const API = import.meta.env.VITE_API_URL;
 
 export const AuthContext = createContext(null);
 
-async function fetchMe(token) {
+// The JWT lives in an httpOnly cookie, so it's never touched from JS —
+// `credentials: 'include'` sends/receives it automatically on every call.
+async function fetchMe() {
   const res = await fetch(`${API}/api/auth/me`, {
-    headers: { Authorization: `Bearer ${token}` },
+    credentials: 'include',
   });
   if (!res.ok) throw new Error('Session expired');
   return res.json();
@@ -17,25 +18,21 @@ export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // On app load: check localStorage for token and restore user
+  // On app load: ask the backend who we are — the cookie (if any) rides along
   useEffect(() => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-    fetchMe(token)
+    fetchMe()
       .then((userData) => setUser(userData))
-      .catch(() => localStorage.removeItem(TOKEN_KEY))
+      .catch(() => setUser(null))
       .finally(() => setLoading(false));
   }, []);
 
   // POST /api/auth/register
-  const register = async (name, email, password, photo) => {
+  const register = async (name, email, password, role, photoURL) => {
     const res = await fetch(`${API}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password, photo }),
+      credentials: 'include',
+      body: JSON.stringify({ name, email, password, role, photoURL }),
     });
     if (!res.ok) {
       const err = await res.json();
@@ -49,6 +46,7 @@ export default function AuthProvider({ children }) {
     const res = await fetch(`${API}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ email, password }),
     });
     if (!res.ok) {
@@ -56,30 +54,30 @@ export default function AuthProvider({ children }) {
       throw new Error(err.message || 'Login failed');
     }
     const data = await res.json();
-    localStorage.setItem(TOKEN_KEY, data.token);
     setUser(data.user);
     return data.user;
   };
 
-  // Called after token is saved externally — fetches /api/auth/me and updates state
+  // Called after a cookie-issuing call (e.g. Google login) — re-fetches /api/auth/me
   const getUser = async () => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) return null;
     try {
-      const userData = await fetchMe(token);
+      const userData = await fetchMe();
       setUser(userData);
       return userData;
     } catch {
-      localStorage.removeItem(TOKEN_KEY);
       setUser(null);
       return null;
     }
   };
 
-  // Clear token and user state
-  const logout = () => {
+  // Cookie is httpOnly, so JS can't clear it — ask the backend to clear it instead
+  const logout = async () => {
     setUser(null);
-    localStorage.removeItem(TOKEN_KEY);
+    try {
+      await fetch(`${API}/api/auth/logout`, { method: 'POST', credentials: 'include' });
+    } catch {
+      // Best-effort: local state is already cleared above
+    }
   };
 
   const updateUser = (updates) => {

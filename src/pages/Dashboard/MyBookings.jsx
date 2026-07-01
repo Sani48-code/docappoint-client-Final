@@ -21,11 +21,7 @@ export default function MyBookings() {
   const { data: bookings, isLoading } = useQuery({
     queryKey: ['bookings', user?.email],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookings?email=${user?.email}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('docappoint_token')}`,
-        },
-      });
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookings?email=${user?.email}`);
       return res.data;
     },
     retry: false,
@@ -35,11 +31,7 @@ export default function MyBookings() {
   const displayBookings = bookings || [];
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => axios.delete(`${import.meta.env.VITE_API_URL}/api/bookings/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('docappoint_token')}`,
-      },
-    }),
+    mutationFn: (id) => axios.delete(`${import.meta.env.VITE_API_URL}/api/bookings/${id}`),
     onSuccess: () => queryClient.invalidateQueries(['bookings']),
   });
 

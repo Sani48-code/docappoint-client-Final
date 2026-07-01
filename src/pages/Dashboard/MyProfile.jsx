@@ -14,9 +14,7 @@ export default function MyProfile() {
   const { data: bookingsData } = useQuery({
     queryKey: ['bookings-count', user?.email],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookings?email=${user?.email}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('docappoint_token')}` },
-      });
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookings?email=${user?.email}`);
       return res.data;
     },
     retry: false,

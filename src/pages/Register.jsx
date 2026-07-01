@@ -65,7 +65,7 @@ export default function Register() {
 
   const onSubmit = async (data) => {
     try {
-      await registerUser(data.name, data.email, data.password, data.photoURL);
+      await registerUser(data.name, data.email, data.password, data.role, data.photoURL);
       toast.success('Registration successful! Please login.');
       navigate('/login');
     } catch (err) {
@@ -159,6 +159,28 @@ export default function Register() {
                   className="input-field"
                 />
                 {errors.email && <p className="text-rose-500 text-xs mt-1.5">{errors.email.message}</p>}
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <label className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-2 block">I am a</label>
+                <div className="grid grid-cols-2 gap-3">
+                  {['patient', 'doctor'].map((r) => (
+                    <label
+                      key={r}
+                      className="flex items-center justify-center gap-2 py-3 border-2 border-slate-200 rounded-xl cursor-pointer capitalize font-semibold text-sm text-slate-600 has-[:checked]:border-accent has-[:checked]:text-accent has-[:checked]:bg-accent/5 transition-colors"
+                    >
+                      <input
+                        {...register('role', { required: 'Please select a role' })}
+                        type="radio"
+                        value={r}
+                        defaultChecked={r === 'patient'}
+                        className="accent-accent"
+                      />
+                      {r}
+                    </label>
+                  ))}
+                </div>
+                {errors.role && <p className="text-rose-500 text-xs mt-1.5">{errors.role.message}</p>}
               </motion.div>
 
               <motion.div variants={itemVariants}>

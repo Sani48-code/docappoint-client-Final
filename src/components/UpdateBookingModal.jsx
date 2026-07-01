@@ -30,20 +30,12 @@ export default function UpdateBookingModal({ booking, onClose }) {
 
   const onSubmit = async (data) => {
     try {
-      await axios.patch(
-        `${import.meta.env.VITE_API_URL}/api/bookings/${booking._id}`,
-        {
-          patientName: data.patientName,
-          phone: data.phone,
-          appointmentDate: data.date,
-          appointmentTime: data.time,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('docappoint_token')}`,
-          },
-        }
-      );
+      await axios.patch(`${import.meta.env.VITE_API_URL}/api/bookings/${booking._id}`, {
+        patientName: data.patientName,
+        phone: data.phone,
+        appointmentDate: data.date,
+        appointmentTime: data.time,
+      });
       toast.success('Booking updated successfully!');
       queryClient.invalidateQueries(['bookings']);
       onClose();
